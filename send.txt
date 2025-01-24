@@ -1,0 +1,29 @@
+
+func (server *Server) SendMessage(player *Player, message string) (bool, string) {
+
+	if player == nil {
+		return false, "nil player"
+	}
+
+	if server.Dev {
+		fmt.Printf("[Message by @%s]\n%s\n", player.Stats.Username, message)
+		return true, ""
+	}
+
+	endpoint := fmt.Sprintf("/api/cities/%s/chat/send", player.CityId)
+	payload := fmt.Sprintf("resident=%s&message=%s&", player.ResidentId, message)
+	method := "POST"
+
+	body, status, err := player.makeRequest(endpoint, method, payload)
+	if err != nil {
+		fmt.Println(err)
+		return false, ""
+	}
+
+	if !strings.Contains(string(body), "Success") {
+		fmt.Println("Status: ", status)
+		fmt.Println("Raw: ", string(body))
+	}
+
+	return strings.Contains(string(body), "Success"), string(body)
+}

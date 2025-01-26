@@ -27,7 +27,7 @@ func GenerateRandomBase64(length int) (string, error) {
 
 var messageID int
 
-func StartWebsocket(player *superplayer.Player) (err error) {
+func StartWebsocket(player *superplayer.Player, owners *superplayer.Owners) (err error) {
 	// Define the WebSocket URL
 	u := url.URL{
 		Scheme:   "wss",
@@ -86,25 +86,23 @@ func StartWebsocket(player *superplayer.Player) (err error) {
 		collects := fmt.Sprintf(`{"t":"d","d":{"r":13,"a":"q","b":{"p":"\/cities\/%s\/collects","h":""}}}`, player.CityId)
 		limits := fmt.Sprintf(`{"t":"d","d":{"r":13,"a":"q","b":{"p":"cities/%s/limits/resident/%s","h":""}}}`, player.CityId, player.ResidentId)
 
-		/*
-			if strings.Contains(message, "cities/5319377040179200/limits/resident/5616078598701056") {
+		if strings.Contains(message, "cities/5319377040179200/limits/resident/5616078598701056") {
 
-				var limits WssLimitsReponse
-				err := json.Unmarshal([]byte(message), &limits)
-				if err != nil {
-					log.Printf("[C<-S][wss::limits.response]: %v\n", message)
-					continue
-				}
+			var limits WssLimitsReponse
+			err := json.Unmarshal([]byte(message), &limits)
+			if err != nil {
+				log.Printf("[C<-S][wss::limits.response]: %v\n", message)
+				continue
+			}
 
-				player.UpdateResources(nil, &superplayer.Warehouse{
-					Money:  limits.D.B.D.Current.Resources.Money,
-					Wood:   limits.D.B.D.Current.Resources.Wood,
-					Cement: limits.D.B.D.Current.Resources.Cement,
-					Steel:  limits.D.B.D.Current.Resources.Steel,
-				})
-				//log.Printf("[C<-S][wss::limits.response]: %v\n", limits.D.B.D.Current.Resources.Money)
-			} else*/
-		if strings.Contains(message, fmt.Sprintf("\"cities/%s/collects\"", player.CityId)) {
+			player.UpdateResources(nil, &superplayer.Warehouse{
+				Money:  limits.D.B.D.Current.Resources.Money,
+				Wood:   limits.D.B.D.Current.Resources.Wood,
+				Cement: limits.D.B.D.Current.Resources.Cement,
+				Steel:  limits.D.B.D.Current.Resources.Steel,
+			})
+			//log.Printf("[C<-S][wss::limits.response]: %v\n", limits.D.B.D.Current.Resources.Money)
+		} else if strings.Contains(message, fmt.Sprintf("\"cities/%s/collects\"", player.CityId)) {
 			var collects WssCollectsResponse
 			errcollects := json.Unmarshal([]byte(message), &collects)
 			if errcollects != nil {
@@ -193,6 +191,8 @@ func StartWebsocket(player *superplayer.Player) (err error) {
 			go func() {
 				for {
 					websocket.Message.Send(ws, limits)
+					player.CollectBlimp()
+					player.CollectRover()
 					player.CollectCity()
 					time.Sleep(10 * time.Second)
 				}

@@ -119,26 +119,28 @@ func main() {
 	}
 
 	go func() {
-		err := StartWebsocket(superplayer.NewPlayer("AAC34261-A00A-4A93-880D-7AE34C677520", "5616078598701056", "5319377040179200"))
+		err := StartWebsocket(superplayer.NewPlayer("AAC34261-A00A-4A93-880D-7AE34C677520", "5616078598701056", "5319377040179200"), nil)
 		if err != nil {
 			log.Fatalf("Dial error: %v", err)
 		}
 	}()
 
 	go func() {
-		err := StartWebsocket(superplayer.NewPlayer("AAC34261-A00A-4A93-880D-7AE34C677520", "6430000268443648", "6392074448928768"))
+		err := StartWebsocket(superplayer.NewPlayer("AAC34261-A00A-4A93-880D-7AE34C677520", "6430000268443648", "6392074448928768"), nil)
 		if err != nil {
 			log.Fatalf("Dial error: %v", err)
 		}
 	}()
 
-	go func() {
-		err := StartWebsocket(superplayer.NewPlayer("AAC34261-A00A-4A93-880D-7AE34C677520", "5806037016248320", "5009735852490752"))
-		if err != nil {
-			log.Fatalf("Dial error: %v", err)
-		}
-	}()
+	/*
+		go func() {
+			err := StartWebsocket(superplayer.NewPlayer("AAC34261-A00A-4A93-880D-7AE34C677520", "5806037016248320", "5009735852490752"), nil)
+			if err != nil {
+				log.Fatalf("Dial error: %v", err)
+			}
+		}()
 
+	*/
 	fmt.Println("Connected to WebSocket")
 
 	//privateServer.StartBot()
